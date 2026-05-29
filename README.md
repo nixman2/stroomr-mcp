@@ -1,38 +1,129 @@
-# stroomr-mcp
+# StroomR MCP
 
-Stroomr helps AI assistants find the best times to use electricity by combining local weather and dynamic energy prices. — when to charge your EV, run your heat pump, or use home battery storage.
+**Helps AI assistants answer “when should I use electricity?” in one call — with live Nord Pool prices, local solar forecasts, and ready-to-use load-shift advice.**
 
-Powered by [StroomR](https://stroomr.nl) — automatic energy management for households. This MCP is a free demo of StroomR's load-shifting logic inside your AI assistant.
+Built by [StroomR](https://stroomr.nl). Specialized for **European day-ahead energy markets** and **home energy timing** — not a general weather or finance API.
 
-Weather data from [Open-Meteo](https://open-meteo.com/) (CC BY 4.0). Energy prices from the Nord Pool public data portal API (community-documented, unofficial).
+---
 
-## Features
+## What your agent can do
 
-| Tool | Description |
-|------|-------------|
-| `resolve_location` | Geocode a city or validate coordinates and Nord Pool price area |
-| `get_weather_forecast` | Sun hours, sun windows, rain periods, and precipitation summaries |
-| `get_energy_prices` | Current price and today/tomorrow Nord Pool day-ahead slots |
-| `get_weather_and_prices` | Combined weather + price snapshot for load-shifting |
-| `get_load_shift_advice` | Optimal times to charge an EV, run a heat pump, or use a home battery — based on prices and solar forecast |
+| Job | Without this server | With StroomR MCP |
+|-----|---------------------|------------------|
+| EV charging advice | Agent guesses or asks user to check multiple apps | One tool call → optimal window, savings estimate, hours to avoid |
+| Heat pump / battery timing | Manual price lookup + weather check | Combined price + solar overlap in structured output |
+| “Is tomorrow sunny?” + “Are prices low?” | Two separate lookups, agent merges context | Single combined snapshot for load-shifting decisions |
 
-### Load-shift advice defaults
+**Outcome, not plumbing:** your agent completes energy-timing tasks with fewer steps, pre-merged context, and structured fields (`recommendedWindows`, `avoidWindows`, `estimatedSavingsVsAvgEur`) instead of raw API dumps.
 
-| Device | `device` value | Default power | Default duration |
-|--------|----------------|---------------|----------------|
-| EV charger | `ev` | 11 kW | 4 hours |
-| Heat pump | `heat_pump` | 3 kW | 4 hours |
-| Home battery | `battery` | 5 kW | 2 hours |
+---
 
-Override with `power_kw` and `duration_hours`. Set `day` to `today` or `tomorrow` (default: `tomorrow`).
+## Best use cases
 
-## Supported Nord Pool areas
+1. **“When should I charge my EV tomorrow?”** — cheapest consecutive window, estimated savings vs. average, evening peak to avoid.
+2. **“Optimal times for my heat pump today”** — price-ranked hours with solar overlap for self-consumption.
+3. **“Will it be sunny tomorrow, and are electricity prices low?”** — weather + Nord Pool snapshot for solar/load decisions.
+4. **“What are the cheapest hours to use power this week?”** — day-ahead slots for today and tomorrow.
+5. **“How much sun will I get today?”** — sun hours, sun windows, and rain periods for a given location.
 
-`DK1`, `DK2`, `FI`, `NO1`–`NO5`, `SE1`–`SE4`, `EE`, `LT`, `LV`, `AT`, `BE`, `FR`, `GER`, `NL`, `PL`, `BG`, `TEL`
+**Scope:** Nord Pool day-ahead markets in Europe (`NL`, `GER`, `DK1`, `SE3`, etc.). Not for real-time trading, grid operator data, or non-European utilities.
 
-Locations outside these markets receive a clear error with supported areas listed.
+---
 
-## Setup
+## Supported clients
+
+Works with any MCP-compatible assistant, including:
+
+- **Cursor** (local stdio — config included in this repo)
+- **Claude Desktop** (add to `claude_desktop_config.json`)
+- **Other MCP hosts** that support stdio servers (ChatGPT desktop integrations, custom agents, etc.)
+
+Requires **Node.js 20+**. Runs locally on your machine — no StroomR account required to use the MCP.
+
+---
+
+## Auth & safety
+
+| | |
+|---|---|
+| **Runs** | Locally via stdio (`node dist/index.js`) |
+| **Credentials** | None — no API keys, no StroomR login |
+| **Network** | Read-only outbound calls to Open-Meteo (weather) and Nord Pool public day-ahead API (prices) |
+| **Writes** | None — does not control devices, meters, or your home |
+| **Data sent** | Location (city or coordinates) and Nord Pool area — only what you pass in tool args or env config |
+
+Set a default location in env so the agent does not need to ask every time:
+
+```json
+"env": {
+  "STROOMR_CITY": "Amsterdam",
+  "STROOMR_PRICE_AREA": "NL"
+}
+```
+
+---
+
+## Examples
+
+### Example 1 — EV charging (primary use case)
+
+**User prompt:**
+> When should I charge my EV tomorrow?
+
+**Agent action:** `get_load_shift_advice` · `{ "device": "ev", "day": "tomorrow" }`
+
+**Agent reply (from structured output):**
+> Charge between **10:00–14:00** tomorrow. Estimated savings: **€3.73** vs. average wholesale price for a 4 h session at 11 kW. Avoid **17:00–23:00** (evening peak). Overlaps with expected sunshine — good for solar self-consumption.
+
+---
+
+### Example 2 — Heat pump today
+
+**User prompt:**
+> Optimal times for heat pump today?
+
+**Agent action:** `get_load_shift_advice` · `{ "device": "heat_pump", "day": "today" }`
+
+**Agent reply:**
+> Run intensive heating between **14:00–18:00** today (~€0.68 cheaper than average for 12 kWh). Avoid **19:00–23:00**.
+
+---
+
+### Example 3 — Weather + prices in one step
+
+**User prompt:**
+> Is tomorrow good for cheap charging and solar?
+
+**Agent action:** `get_weather_and_prices` · `{ "days": 2 }`
+
+**Agent reply:**
+> Tomorrow: ~15 h sunshine (07:00–21:00), day-ahead prices near zero mid-day. Strong day for shifting loads to midday.
+
+---
+
+## Tools (5, purpose-built)
+
+| Tool | Agent job |
+|------|-----------|
+| `get_load_shift_advice` | **Main tool.** Optimal + avoid windows for EV, heat pump, or battery; savings estimate; solar overlap |
+| `get_weather_and_prices` | Combined snapshot when the agent needs both sun and price context |
+| `get_energy_prices` | Cheapest/expensive hours, current and tomorrow Nord Pool day-ahead slots |
+| `get_weather_forecast` | Sun windows, rain periods, precipitation — when solar matters |
+| `resolve_location` | Validate city/coordinates and resolve Nord Pool price area |
+
+**Defaults for load-shift advice:**
+
+| Device | `device` | Power | Duration |
+|--------|----------|-------|----------|
+| EV charger | `ev` | 11 kW | 4 h |
+| Heat pump | `heat_pump` | 3 kW | 4 h |
+| Home battery | `battery` | 5 kW | 2 h |
+
+Override with `power_kw` and `duration_hours`.
+
+---
+
+## Install
 
 ```bash
 npm install
@@ -41,7 +132,7 @@ npm run build
 
 ### Cursor
 
-The repo includes [`.cursor/mcp.json`](.cursor/mcp.json):
+[`.cursor/mcp.json`](.cursor/mcp.json):
 
 ```json
 {
@@ -51,7 +142,8 @@ The repo includes [`.cursor/mcp.json`](.cursor/mcp.json):
       "args": ["dist/index.js"],
       "env": {
         "STROOMR_CITY": "Amsterdam",
-        "STROOMR_PRICE_AREA": "NL"
+        "STROOMR_PRICE_AREA": "NL",
+        "STROOMR_OUTPUT_FORMAT": "structured"
       }
     }
   }
@@ -60,104 +152,63 @@ The repo includes [`.cursor/mcp.json`](.cursor/mcp.json):
 
 Restart Cursor after changing MCP config.
 
+### Claude Desktop
+
+```json
+{
+  "mcpServers": {
+    "stroomr": {
+      "command": "node",
+      "args": ["/absolute/path/to/stroomr-mcp/dist/index.js"],
+      "env": {
+        "STROOMR_CITY": "Amsterdam",
+        "STROOMR_PRICE_AREA": "NL"
+      }
+    }
+  }
+}
+```
+
+---
+
 ## Configuration
 
 | Variable | Description |
 |----------|-------------|
-| `STROOMR_CITY` | Default city (geocoded via Open-Meteo) |
+| `STROOMR_CITY` | Default city (geocoded) |
 | `STROOMR_LAT` / `STROOMR_LON` | Default coordinates |
-| `STROOMR_PRICE_AREA` | Nord Pool area override (e.g. `NL`) |
-| `STROOMR_CURRENCY` | Price currency (default `EUR`) |
+| `STROOMR_PRICE_AREA` | Nord Pool area (e.g. `NL`) |
+| `STROOMR_CURRENCY` | Default `EUR` |
 | `STROOMR_TIMEZONE` | Timezone override |
-| `STROOMR_OUTPUT_FORMAT` | Response format: `friendly` (default) or `structured` |
+| `STROOMR_OUTPUT_FORMAT` | `friendly` (default) or `structured` |
 
 **Priority:** tool arguments → env vars → clear error (no silent default city).
 
-If only `STROOMR_PRICE_AREA` is set, energy and load-shift tools work; weather tools require a city or coordinates.
+Structured responses include a `stroomr` branding block and fields optimised for agent parsing (`recommendedWindows`, `cheapestSlot`, `summary_nl`).
 
-### Output format
+---
 
-| Value | Behaviour |
-|-------|-----------|
-| `friendly` (default) | Summary text + JSON payload (good for chat) |
-| `structured` | Single JSON envelope only — optimised for LLMs and code |
-
-Aliases for structured mode: `json`, `machine`.
-
-Set in `.cursor/mcp.json`:
-
-```json
-"env": {
-  "STROOMR_OUTPUT_FORMAT": "structured"
-}
-```
-
-## Example prompts
-
-### Energy prices
-
-| Prompt | Tool |
-|--------|------|
-| What are the current electricity prices? | `get_energy_prices` |
-| Cheapest hours to use power today | `get_energy_prices` |
-| Tomorrow's energy prices in the Netherlands | `get_energy_prices` |
-
-### Weather
-
-| Prompt | Tool |
-|--------|------|
-| Will it be sunny tomorrow? | `get_weather_forecast` |
-| How much sun today? | `get_weather_forecast` |
-| How much rain today and when? | `get_weather_forecast` |
-| When is there sun today? | `get_weather_forecast` → `sun_windows` |
-
-### Load shifting (StroomR)
-
-| Prompt | Tool |
-|--------|------|
-| When should I charge my EV tomorrow? | `get_load_shift_advice` |
-| Optimal times for heat pump today | `get_load_shift_advice` |
-| Best window to charge my home battery tomorrow | `get_load_shift_advice` |
-| When to avoid using power this evening? | `get_load_shift_advice` → `avoidWindows` |
-| How much can I save by charging at the cheapest time? | `get_load_shift_advice` → `estimatedSavingsVsAvgEur` |
-
-### Combined
-
-| Prompt | Tool |
-|--------|------|
-| Weather and electricity prices for load shifting | `get_weather_and_prices` |
-| Is tomorrow good for solar self-consumption and cheap charging? | `get_weather_and_prices` |
-
-### Location
-
-| Prompt | Tool |
-|--------|------|
-| What Nord Pool price area is Amsterdam in? | `resolve_location` |
-| Validate coordinates for energy pricing | `resolve_location` |
-
-## Smoke test
+## Verify
 
 ```bash
 npm run smoke-test
 ```
 
-## StroomR
+---
 
-This MCP demonstrates a slice of what [StroomR](https://stroomr.nl) does automatically:
+## About StroomR
 
-- Shift EV charging, heat pumps, and batteries to the cheapest hours
-- Combine dynamic tariffs with solar forecasts
-- Run 24/7 without manual planning
+This MCP is a **free demo** of the load-shifting logic in [StroomR](https://stroomr.nl) — energy management that automatically times EV charging, heat pumps, and batteries against dynamic tariffs and solar production.
 
-**Free pilot:** [stroomr.nl#aanmelden](https://stroomr.nl#aanmelden)
+**Want it to run 24/7 without asking an assistant?** [Join the free pilot →](https://stroomr.nl#aanmelden)
 
-## Attribution
+---
 
-- Weather data by [Open-Meteo.com](https://open-meteo.com/)
-- Day-ahead prices from [Nord Pool Group](https://www.nordpoolgroup.com/)
+## Data sources & disclaimer
 
-## Disclaimer
+- Weather: [Open-Meteo](https://open-meteo.com/) (CC BY 4.0)
+- Prices: [Nord Pool Group](https://www.nordpoolgroup.com/) day-ahead via community-documented public API (unofficial; may change)
 
-The Nord Pool data portal endpoint (`dataportal-api.nordpoolgroup.com`) is widely used in open-source projects but is not an officially documented public API. It may change without notice.
+Load-shift advice uses **wholesale day-ahead** prices. Retail bills include taxes, grid fees, and supplier markups — savings estimates are indicative, not guaranteed.
 
-Load-shift advice uses wholesale day-ahead prices. Actual costs may differ due to taxes, grid fees, and supplier markups.
+**Supported Nord Pool areas:** `DK1`, `DK2`, `FI`, `NO1`–`NO5`, `SE1`–`SE4`, `EE`, `LT`, `LV`, `AT`, `BE`, `FR`, `GER`, `NL`, `PL`, `BG`, `TEL`

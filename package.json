@@ -1,7 +1,7 @@
 {
   "name": "stroomr-mcp",
   "version": "1.0.0",
-  "description": "MCP server for local weather and Nord Pool day-ahead electricity prices",
+  "description": "MCP server that helps AI assistants answer when to charge an EV, run a heat pump, or shift home energy — using live Nord Pool prices and solar forecasts.",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
