@@ -1,0 +1,11 @@
+{
+  "name": "stroomr",
+  "description": "When to charge your EV, run your heat pump, or shift home energy — live Nord Pool prices and solar forecasts for AI agents.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Andre Versteeg",
+    "url": "https://stroomr.nl"
+  },
+  "homepage": "https://stroomr.nl",
+  "repository": "https://github.com/nixman2/stroomr-mcp"
+}

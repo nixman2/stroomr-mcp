@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "stroomr": {
+      "command": "npx",
+      "args": ["-y", "@nixman2/stroomr-mcp"],
+      "env": {
+        "STROOMR_PRICE_AREA": "NL",
+        "STROOMR_OUTPUT_FORMAT": "structured"
+      }
+    }
+  }
+}

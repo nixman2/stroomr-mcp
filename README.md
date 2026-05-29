@@ -268,3 +268,19 @@ curl "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.nix
 ```
 
 Registry name: **`io.github.nixman2/stroomr-mcp`** · npm: **`@nixman2/stroomr-mcp`**
+
+---
+
+## Submit to Cursor Directory
+
+[cursor.directory](https://cursor.directory) scans the **repo root** for [Open Plugins](https://open-plugins.com) components. This repo includes:
+
+| Path | Purpose |
+|------|---------|
+| `mcp.json` | MCP server config (required for directory scan) |
+| `.cursor-plugin/plugin.json` | Plugin manifest |
+| `skills/stroomr-energy/SKILL.md` | Agent skill for energy-timing questions |
+
+After pushing to GitHub, re-scan at **Submit a Plugin → Auto (GitHub)** with `https://github.com/nixman2/stroomr-mcp`.
+
+**Note:** `mcp.json` uses `npx @nixman2/stroomr-mcp` — npm publish must succeed first. Local dev still uses `.cursor/mcp.json`.
