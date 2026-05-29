@@ -1,14 +1,42 @@
 {
-  "name": "stroomr-mcp",
+  "name": "@nixman2/stroomr-mcp",
   "version": "1.0.0",
+  "mcpName": "io.github.nixman2/stroomr-mcp",
   "description": "MCP server that helps AI assistants answer when to charge an EV, run a heat pump, or shift home energy — using live Nord Pool prices and solar forecasts.",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
     "stroomr-mcp": "dist/index.js"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nixman2/stroomr-mcp.git"
+  },
+  "homepage": "https://github.com/nixman2/stroomr-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/nixman2/stroomr-mcp/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "energy",
+    "nord-pool",
+    "ev-charging",
+    "load-shifting",
+    "heat-pump",
+    "stroomr",
+    "electricity-prices"
+  ],
+  "author": "Andre Versteeg",
+  "license": "MIT",
   "scripts": {
     "build": "tsc",
+    "prepublishOnly": "npm run build",
     "start": "node dist/index.js",
     "dev": "tsc --watch",
     "smoke-test": "npm run build && node scripts/smoke-test.mjs"

@@ -125,12 +125,31 @@ Override with `power_kw` and `duration_hours`.
 
 ## Install
 
+### From npm (after publish)
+
+```json
+{
+  "mcpServers": {
+    "stroomr": {
+      "command": "npx",
+      "args": ["-y", "@nixman2/stroomr-mcp"],
+      "env": {
+        "STROOMR_CITY": "Amsterdam",
+        "STROOMR_PRICE_AREA": "NL"
+      }
+    }
+  }
+}
+```
+
+### From source
+
 ```bash
 npm install
 npm run build
 ```
 
-### Cursor
+### Cursor (local dev)
 
 [`.cursor/mcp.json`](.cursor/mcp.json):
 
@@ -212,3 +231,40 @@ This MCP is a **free demo** of the load-shifting logic in [StroomR](https://stro
 Load-shift advice uses **wholesale day-ahead** prices. Retail bills include taxes, grid fees, and supplier markups — savings estimates are indicative, not guaranteed.
 
 **Supported Nord Pool areas:** `DK1`, `DK2`, `FI`, `NO1`–`NO5`, `SE1`–`SE4`, `EE`, `LT`, `LV`, `AT`, `BE`, `FR`, `GER`, `NL`, `PL`, `BG`, `TEL`
+
+---
+
+## Publish to MCP Registry
+
+Prepared for the [official MCP Registry quickstart](https://github.com/modelcontextprotocol/registry/blob/main/docs/modelcontextprotocol-io/quickstart.mdx):
+
+| Step | Status |
+|------|--------|
+| 1. `mcpName` in `package.json` | ✅ `io.github.nixman2/stroomr-mcp` |
+| 2. Publish to npm | ⏳ Run locally (requires npm login) |
+| 3. Install `mcp-publisher` | ✅ |
+| 4. Create `server.json` | ✅ Validated |
+| 5. `mcp-publisher login github` | — |
+| 6. `mcp-publisher publish` | — |
+
+**Step 2 — publish to npm:**
+
+```bash
+npm adduser          # if not logged in
+npm publish --access public
+```
+
+**Steps 5–6 — publish registry metadata:**
+
+```bash
+mcp-publisher login github
+mcp-publisher publish
+```
+
+Verify listing:
+
+```bash
+curl "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.nixman2/stroomr-mcp"
+```
+
+Registry name: **`io.github.nixman2/stroomr-mcp`** · npm: **`@nixman2/stroomr-mcp`**

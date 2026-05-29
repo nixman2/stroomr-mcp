@@ -1,0 +1,77 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.nixman2/stroomr-mcp",
+  "title": "StroomR Energy Timing",
+  "description": "When to charge EVs or shift home energy — Nord Pool prices and solar forecasts for AI agents.",
+  "websiteUrl": "https://stroomr.nl",
+  "repository": {
+    "url": "https://github.com/nixman2/stroomr-mcp",
+    "source": "github"
+  },
+  "version": "1.0.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@nixman2/stroomr-mcp",
+      "version": "1.0.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "runtimeHint": "npx",
+      "runtimeArguments": [
+        {
+          "type": "named",
+          "name": "-y",
+          "description": "Auto-confirm npx package install"
+        }
+      ],
+      "packageArguments": [
+        {
+          "type": "positional",
+          "valueHint": "package",
+          "value": "@nixman2/stroomr-mcp"
+        }
+      ],
+      "environmentVariables": [
+        {
+          "name": "STROOMR_CITY",
+          "description": "Default city for weather and price area inference (e.g. Amsterdam)",
+          "format": "string",
+          "isRequired": false,
+          "isSecret": false,
+          "placeholder": "Amsterdam"
+        },
+        {
+          "name": "STROOMR_LAT",
+          "description": "Default latitude (WGS84) — used with STROOMR_LON",
+          "format": "string",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "STROOMR_LON",
+          "description": "Default longitude (WGS84) — used with STROOMR_LAT",
+          "format": "string",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "STROOMR_PRICE_AREA",
+          "description": "Nord Pool price area override (e.g. NL, GER, DK1)",
+          "format": "string",
+          "isRequired": false,
+          "isSecret": false,
+          "placeholder": "NL"
+        },
+        {
+          "name": "STROOMR_OUTPUT_FORMAT",
+          "description": "Response format: friendly (default) or structured",
+          "format": "string",
+          "isRequired": false,
+          "isSecret": false,
+          "placeholder": "structured"
+        }
+      ]
+    }
+  ]
+}
