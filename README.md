@@ -1,8 +1,8 @@
 # stroomr-mcp
 
-MCP server for **electricity pricing**, **local weather**, and **optimal load-shifting advice** — when to charge your EV, run your heat pump, or use home battery storage.
+Stroomr helps AI assistants find the best times to use electricity by combining local weather and dynamic energy prices. — when to charge your EV, run your heat pump, or use home battery storage.
 
-Powered by [StroomR](https://stroomr.nl) — automatic energy management for households and greenhouses. This MCP is a free demo of StroomR's load-shifting logic inside your AI assistant.
+Powered by [StroomR](https://stroomr.nl) — automatic energy management for households. This MCP is a free demo of StroomR's load-shifting logic inside your AI assistant.
 
 Weather data from [Open-Meteo](https://open-meteo.com/) (CC BY 4.0). Energy prices from the Nord Pool public data portal API (community-documented, unofficial).
 
