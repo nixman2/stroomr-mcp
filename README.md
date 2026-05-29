@@ -1,6 +1,8 @@
 # stroomr-mcp
 
-MCP server for **local weather** and **Nord Pool day-ahead electricity prices** — no API keys required.
+MCP server for Electricity pricing and weather data including forecasts and optimal timing windows on when to Charge your EV or use your Home batteries stored energy.
+
+Powered by StroomR — energy-advice for your AI ” + installation + example prompts stroomr.nl
 
 Weather data from [Open-Meteo](https://open-meteo.com/) (CC BY 4.0). Energy prices from the Nord Pool public data portal API (community-documented, unofficial).
 
