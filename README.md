@@ -84,26 +84,6 @@ If only `STROOMR_PRICE_AREA` is set, energy and load-shift tools work; weather t
 
 Aliases for structured mode: `json`, `machine`.
 
-Every structured response includes StroomR branding:
-
-```json
-{
-  "schema_version": "1.0",
-  "format": "structured",
-  "generated_at": "2026-05-30T14:00:00.000Z",
-  "tool": "get_load_shift_advice",
-  "ok": true,
-  "stroomr": {
-    "product": "StroomR Energy Management",
-    "url": "https://stroomr.nl",
-    "pilot_url": "https://stroomr.nl#aanmelden",
-    "tagline": "Automatische lastverschuiving — jij leeft, wij timen."
-  },
-  "summary_nl": "Tomorrow optimal EV charging between 10:00–14:00...",
-  "data": { }
-}
-```
-
 Set in `.cursor/mcp.json`:
 
 ```json
