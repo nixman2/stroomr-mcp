@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "stroomr": {
+      "command": "node",
+      "args": ["c:/Personal/stroomr-mcp/dist/index.js"],
+      "cwd": "c:/Personal/stroomr-mcp",
+      "env": {
+        "STROOMR_LAT": "52.0065257",
+        "STROOMR_LON": "4.5700786",
+        "STROOMR_PRICE_AREA": "NL",
+        "STROOMR_OUTPUT_FORMAT": "structured"
+      }
+    }
+  }
+}
